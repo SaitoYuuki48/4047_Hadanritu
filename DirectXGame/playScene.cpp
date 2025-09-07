@@ -28,6 +28,10 @@ void PlayScene::Initialize() {
 		resultDigits[i]->SetSize({90, 90});
 	}
 
+	// 　白背景 .cpp ini
+	uint32_t backHandle = TextureManager::Load("WhiteBack.png");
+	textureBackground_ = Sprite::Create(backHandle, {0, 0});
+
 	// --- 記号スプライト ---
 	uint32_t textTex = TextureManager::Load("Text.png");
 	uint32_t percentTex = TextureManager::Load("%.png");
@@ -120,6 +124,7 @@ void PlayScene::DrawNumber(int value, Vector2 pos, Sprite* sprites[10], int spac
 }
 
 void PlayScene::Draw() {
+	textureBackground_->Draw();
 	// 円
 	bigCircle->SetSize({R * 2, R * 2});
 	bigCircle->Draw();

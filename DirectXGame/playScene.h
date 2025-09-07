@@ -23,6 +23,8 @@ private:
 	Sprite* textSprite = nullptr;      // "Text.png"（目標用）
 	Sprite* percentSprite = nullptr;   // "%.png"   （共通で使う）
 	Sprite* toleranceSprite = nullptr; // "+-.png" （誤差表示用）
+	                                   // 白背景 .h
+	Sprite* textureBackground_ = nullptr;
 
 	// ゲームデータ
 	float R; // 大きい円の半径

@@ -1,15 +1,24 @@
 #pragma once
-#include "KamataEngine.h"
+#include <KamataEngine.h>
+using namespace KamataEngine;
 
-// ゲームシーン
 class PlayScene {
 public:
-	// 初期化
 	void Initialize();
-
-	// 更新
 	void Update();
-
-	// 描画
 	void Draw();
+
+private:
+	Sprite* bigCircle = nullptr;
+	Sprite* smallCircle = nullptr;
+
+	float R; // 大きい円の半径
+	float r; // 小さい円の半径
+	float minR;
+	float maxR;
+	float speed;
+	int direction;
+
+	float target;  // 目標破壊率
+	bool finished; // 判定済みフラグ
 };

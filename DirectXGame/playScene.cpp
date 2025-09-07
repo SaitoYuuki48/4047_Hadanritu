@@ -8,12 +8,17 @@ void PlayScene::Initialize() {
 
 	srand((unsigned int)time(nullptr));
 
-	uint32_t circleTexture = TextureManager::Load("circle.png");
+	// --- テクスチャ読み込み ---
+	uint32_t bigTexture = TextureManager::Load("./Resources/BlackCircle.png");
+	uint32_t smallTexture = TextureManager::Load("./Resources/WhiteCircle.png");
+
 	Vector2 centerPos = {400.0f, 300.0f};
 
-	bigCircle = Sprite::Create(circleTexture, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
-	smallCircle = Sprite::Create(circleTexture, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
+	// --- スプライト生成（中心を基準に設定） ---
+	bigCircle = Sprite::Create(bigTexture, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
+	smallCircle = Sprite::Create(smallTexture, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
 
+	// --- ランダム設定 ---
 	R = 50.0f + rand() % 51;
 	target = 30.0f + rand() % 51;
 

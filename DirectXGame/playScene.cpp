@@ -33,6 +33,10 @@ void PlayScene::Initialize() {
 	bigCircle = Sprite::Create(bigTex, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
 	smallCircle = Sprite::Create(smallTex, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
 
+	//　白背景
+	uint32_t backHandle_ = TextureManager::Load("WhiteBack.png");
+	textureBackground_ = Sprite::Create(backHandle_, {0, 0});
+
 	// --- 初期設定 ---
 	level = 1;
 	finished = false;
@@ -111,6 +115,9 @@ void PlayScene::DrawNumber(int value, Vector2 pos) {
 }
 
 void PlayScene::Draw() {
+	// 背景
+	textureBackground_->Draw();
+
 	// 円
 	bigCircle->SetSize({R * 2, R * 2});
 	bigCircle->Draw();

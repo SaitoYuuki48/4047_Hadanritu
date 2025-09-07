@@ -19,6 +19,7 @@ private:
 	// 記号スプライト
 	Sprite* textSprite = nullptr;    // "Text.png"（目標用）
 	Sprite* percentSprite = nullptr; // "%.png"   （結果用）
+	Sprite* toleranceSprite = nullptr; // +-.png （許容誤差表示用）
 
 	// ゲームデータ
 	float R; // 大きい円の半径

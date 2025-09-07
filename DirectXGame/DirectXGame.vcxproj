@@ -262,6 +262,7 @@
     <ClInclude Include="playScene.h" />
     <ClInclude Include="kScene.h" />
     <ClInclude Include="ResultScene.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="TitleScene.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

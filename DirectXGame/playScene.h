@@ -1,4 +1,5 @@
 #pragma once
+#include "Scene.h"
 #include <KamataEngine.h>
 using namespace KamataEngine;
 
@@ -32,6 +33,8 @@ private:
 	float tolerance; // 許容誤差
 	int level;       // レベル
 	bool finished;   // 判定済みフラグ
+
+
 
 	// 内部関数
 	void SetupStage();                       // ステージ初期化

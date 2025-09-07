@@ -93,6 +93,7 @@ void PlayScene::Update() {
 			finished = true;
 		}
 	}
+	
 }
 
 void PlayScene::DrawNumber(int value, Vector2 pos) {

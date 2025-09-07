@@ -9,6 +9,11 @@ public:
 	void Initialize();
 	void Update();
 	void Draw();
+	//シーン切り替え用
+	bool isPlaySceneEnd = false;
+	bool IsGameEnd() { return isPlaySceneEnd; }
+	SceneType NextScene() { return SceneType::kResult; }
+
 
 private:
 	PlayScene playScene; // PlayScene をメンバとして持つ

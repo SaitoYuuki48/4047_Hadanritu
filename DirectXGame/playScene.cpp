@@ -61,11 +61,11 @@ void PlayScene::Update() {
 
 void PlayScene::Draw() {
 
-	// 大きい円描画
-	bigCircle->SetTextureRect({0, 0}, {R * 2, R * 2});
+	// 大きい円（黒）
+	bigCircle->SetSize({R * 2, R * 2}); // 直径に合わせる
 	bigCircle->Draw();
 
-	// 小さい円描画
-	smallCircle->SetTextureRect({0, 0}, {r * 2, r * 2});
+	// 小さい円（白）
+	smallCircle->SetSize({r * 2, r * 2});
 	smallCircle->Draw();
 }

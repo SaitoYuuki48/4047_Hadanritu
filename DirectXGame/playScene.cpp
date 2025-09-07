@@ -57,6 +57,11 @@ void PlayScene::Update() {
 
 		finished = true;
 	}
+	if (input_->TriggerKey(DIK_RETURN)) {
+		if (isPlaySceneEnd == false) {
+			isPlaySceneEnd = true;
+		}
+	}
 }
 
 void PlayScene::Draw() {

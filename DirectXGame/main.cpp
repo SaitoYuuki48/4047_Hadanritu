@@ -62,8 +62,6 @@
 using namespace KamataEngine;
 
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
-	uint32_t titleSceneSprite = TextureManager::Load("./Resources/Scene/Title.png");
-	Sprite* sprite = Sprite::Create(titleSceneSprite, { 100.0f, 100.0f });
 	TitleScene* titleScene = nullptr;
 	//タイトルシーンの初期化
 	titleScene = new TitleScene();
@@ -110,7 +108,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		Sprite::PreDraw();
 		switch (sceneNo) {
 		case SceneType::kTitle:
-			sprite->Draw();
 			break;
 		case SceneType::kGamePlay:
 			break;

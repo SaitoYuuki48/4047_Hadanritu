@@ -1,7 +1,8 @@
 #pragma once
-#include <Windows.h>
 #include "Scene.h"
 #include "KamataEngine.h"
+using namespace KamataEngine;
+
 class TitleScene{
 public:
 
@@ -12,17 +13,14 @@ public:
 	//描画
 	void Draw();
 
-	//リセット
-	void sceneReset();
-
 	//シーン切り替え用
-	bool isSceneEnd = false;
-	bool IsSceneEnd() { return isSceneEnd; }
+	bool isTitleSceneEnd = false;
+	bool IsSceneEnd() { return isTitleSceneEnd; }
 	SceneType NextScene() { return SceneType::kGamePlay; }
 
 private:
-	KamataEngine::DirectXCommon* dxCommon_ = nullptr;
-	KamataEngine::Input* input_ = nullptr;
-	KamataEngine::Sprite* sprite;
+	DirectXCommon* dxCommon_ = nullptr;
+	Input* input_ = nullptr;
+	Sprite* titleScene = nullptr;
 };
 

@@ -1,12 +1,21 @@
 #include <Windows.h>
 #include "KamataEngine.h"
 #include "GameScene.h"
+#include "TitleScene.h"
 
 using namespace KamataEngine;
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
-	
+	uint32_t titleSceneSprite = TextureManager::Load("./Resources/Scene/Title.png");
+	Sprite* sprite = Sprite::Create(titleSceneSprite, { 100.0f, 100.0f });
+	TitleScene* titleScene = nullptr;
+	//タイトルシーンの初期化
+	titleScene = new TitleScene();
+	titleScene->Initialize();
+
+	SceneType sceneNo = SceneType::kTitle;
+
 	// DirectXCommonインスタンスの取得
 	DirectXCommon* dxCommon = DirectXCommon::GetInstance();
 	//エンジンの初期化
@@ -24,19 +33,36 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			break;
 		}
 
-		//ゲームシーンの更新
-
+		////シーンごとの処理
+		switch (sceneNo) {
+		case SceneType::kTitle:
+			titleScene->Update();
+			if (titleScene->IsSceneEnd()) {
+				//次のシーンの値を代入してシーン切り替え
+				sceneNo = titleScene->NextScene();
+			}
+			break;
+		case SceneType::kGamePlay:
+			break;
+		case SceneType::kResult:
+			break;
+		}
 		//描画開始
 		dxCommon->PreDraw();
 
 		//ここに描画処理を記述する
-		
-		//スプライト描画前処理
 		Sprite::PreDraw();
-		
-		// ゲームシーンの描画
-		gameScene->Draw();
-
+		switch (sceneNo) {
+		case SceneType::kTitle:
+			sprite->Draw();
+			break;
+		case SceneType::kGamePlay:
+			break;
+		case SceneType::kResult:
+			break;
+		}
+		// スプライト描画後処理
+		Sprite::PostDraw();
 		// 描画終了
 		dxCommon->PostDraw();
 	}

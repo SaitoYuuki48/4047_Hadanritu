@@ -258,7 +258,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="kScene.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="ResultScene.h" />
     <ClInclude Include="TitleScene.h" />
   </ItemGroup>

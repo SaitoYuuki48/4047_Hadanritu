@@ -16,7 +16,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	GameScene* gameScene = new GameScene();
 	//ゲームシーンの初期化
 	gameScene->Initialize();
-
+	
 	//メインループ
 	while (true) {
 		// エンジンの更新
@@ -30,6 +30,10 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		dxCommon->PreDraw();
 
 		//ここに描画処理を記述する
+		
+		//スプライト描画前処理
+		Sprite::PreDraw();
+		
 		// ゲームシーンの描画
 		gameScene->Draw();
 

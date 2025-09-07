@@ -13,16 +13,15 @@ private:
 	Sprite* bigCircle = nullptr;
 	Sprite* smallCircle = nullptr;
 
-	// 数字スプライト（0～9）
-	Sprite* digitSprites[10] = {nullptr};
+	// 数字スプライト
+	Sprite* digitSprites[10] = {nullptr};    // 目標用
+	Sprite* toleranceDigits[10] = {nullptr}; // 誤差用
+	Sprite* resultDigits[10] = {nullptr};    // 結果用
 
 	// 記号スプライト
-	Sprite* textSprite = nullptr;    // "Text.png"（目標用）
-	Sprite* percentSprite = nullptr; // "%.png"   （結果用）
-	Sprite* toleranceSprite = nullptr; // +-.png （許容誤差表示用）
-
-	// 白背景
-	Sprite* textureBackground_ = nullptr;
+	Sprite* textSprite = nullptr;      // "Text.png"（目標用）
+	Sprite* percentSprite = nullptr;   // "%.png"   （共通で使う）
+	Sprite* toleranceSprite = nullptr; // "+-.png" （誤差表示用）
 
 	// ゲームデータ
 	float R; // 大きい円の半径
@@ -38,6 +37,6 @@ private:
 	bool finished;   // 判定済みフラグ
 
 	// 内部関数
-	void SetupStage();                       // ステージ初期化
-	void DrawNumber(int value, Vector2 pos); // 数字をスプライトで描画
+	void SetupStage();
+	void DrawNumber(int value, Vector2 pos, Sprite* sprites[10], int spacing);
 };

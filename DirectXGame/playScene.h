@@ -21,6 +21,9 @@ private:
 	Sprite* percentSprite = nullptr; // "%.png"   （結果用）
 	Sprite* toleranceSprite = nullptr; // +-.png （許容誤差表示用）
 
+	// 白背景
+	Sprite* textureBackground_ = nullptr;
+
 	// ゲームデータ
 	float R; // 大きい円の半径
 	float r; // 小さい円の半径

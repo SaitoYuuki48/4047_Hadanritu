@@ -14,6 +14,12 @@ private:
 	Sprite* bigCircle = nullptr;
 	Sprite* smallCircle = nullptr;
 
+	// テクスチャ（使い回し）
+	uint32_t digitTextures[10]; // 数字
+	uint32_t percentTexture;
+	uint32_t toleranceTexture;
+	uint32_t textTexture;
+
 	// 数字スプライト
 	Sprite* digitSprites[10] = {nullptr};    // 目標用
 	Sprite* toleranceDigits[10] = {nullptr}; // 誤差用
@@ -23,7 +29,7 @@ private:
 	Sprite* textSprite = nullptr;      // "Text.png"（目標用）
 	Sprite* percentSprite = nullptr;   // "%.png"   （共通で使う）
 	Sprite* toleranceSprite = nullptr; // "+-.png" （誤差表示用）
-	                                   // 白背景 .h
+	// 白背景
 	Sprite* textureBackground_ = nullptr;
 
 	// ゲームデータ
@@ -39,9 +45,7 @@ private:
 	int level;       // レベル
 	bool finished;   // 判定済みフラグ
 
-
-
 	// 内部関数
 	void SetupStage();
-	void DrawNumber(int value, Vector2 pos, Sprite* sprites[10], int spacing);
+	void DrawNumber(int value, Vector2 pos, uint32_t textures[10], int spacing, Vector2 size);
 };

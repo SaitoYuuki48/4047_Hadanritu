@@ -7,46 +7,30 @@
 void PlayScene::Initialize() {
 	srand((unsigned int)time(nullptr));
 
-	// --- 数字スプライト（目標用） ---
+	// 数字テクスチャの読み込み
 	for (int i = 0; i < 10; i++) {
-		uint32_t tex = TextureManager::Load(std::to_string(i) + ".png");
-		digitSprites[i] = Sprite::Create(tex, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
-		digitSprites[i]->SetSize({90, 90});
+		digitTextures[i] = TextureManager::Load(std::to_string(i) + ".png");
 	}
 
-	// --- 数字スプライト（誤差用） ---
-	for (int i = 0; i < 10; i++) {
-		uint32_t tex = TextureManager::Load(std::to_string(i) + ".png");
-		toleranceDigits[i] = Sprite::Create(tex, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
-		toleranceDigits[i]->SetSize({60, 60});
-	}
-
-	// --- 数字スプライト（結果用） ---
-	for (int i = 0; i < 10; i++) {
-		uint32_t tex = TextureManager::Load(std::to_string(i) + ".png");
-		resultDigits[i] = Sprite::Create(tex, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
-		resultDigits[i]->SetSize({90, 90});
-	}
-
-	// 　白背景 .cpp ini
+	// 背景
 	uint32_t backHandle = TextureManager::Load("WhiteBack.png");
 	textureBackground_ = Sprite::Create(backHandle, {0, 0});
 
-	// --- 記号スプライト ---
-	uint32_t textTex = TextureManager::Load("Text.png");
-	uint32_t percentTex = TextureManager::Load("%.png");
-	uint32_t tolTex = TextureManager::Load("+-.png");
+	// 記号スプライト
+	textTexture = TextureManager::Load("Text.png");
+	percentTexture = TextureManager::Load("%.png");
+	toleranceTexture = TextureManager::Load("+-.png");
 
-	textSprite = Sprite::Create(textTex, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	textSprite = Sprite::Create(textTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	textSprite->SetSize({500, 500});
 
-	percentSprite = Sprite::Create(percentTex, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
-	percentSprite->SetSize({60, 60}); // 誤差用に小さくも使える
+	percentSprite = Sprite::Create(percentTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	percentSprite->SetSize({60, 60});
 
-	toleranceSprite = Sprite::Create(tolTex, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	toleranceSprite = Sprite::Create(toleranceTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	toleranceSprite->SetSize({60, 60});
 
-	// --- 円スプライト ---
+	// 円スプライト
 	uint32_t bigTex = TextureManager::Load("BlackCircle.png");
 	uint32_t smallTex = TextureManager::Load("WhiteCircle.png");
 
@@ -60,9 +44,8 @@ void PlayScene::Initialize() {
 }
 
 void PlayScene::SetupStage() {
-	R = 100.0f + rand() % 101; // 半径 100〜200
-
-	target = 15.0f + rand() % 66; // 15〜80%
+	R = 100.0f + rand() % 101;
+	target = 15.0f + rand() % 66;
 
 	tolerance = 15.0f - (level - 1);
 	if (tolerance < 5.0f)
@@ -81,7 +64,6 @@ void PlayScene::Update() {
 	if (finished)
 		return;
 
-	// 白丸の伸縮
 	r += speed * direction;
 	if (r >= maxR) {
 		r = maxR;
@@ -92,7 +74,6 @@ void PlayScene::Update() {
 		direction = 1;
 	}
 
-	// Spaceキーで判定
 	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 		float destroyedPercentF = (r / R) * 100.0f;
 		int destroyedPercent = (int)roundf(destroyedPercentF);
@@ -104,10 +85,9 @@ void PlayScene::Update() {
 			finished = true;
 		}
 	}
-	
 }
 
-void PlayScene::DrawNumber(int value, Vector2 pos, Sprite* sprites[10], int spacing) {
+void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int spacing, Vector2 size) {
 	std::string str = std::to_string(value);
 	float offsetX = 0.0f;
 
@@ -116,8 +96,10 @@ void PlayScene::DrawNumber(int value, Vector2 pos, Sprite* sprites[10], int spac
 		if (digit < 0 || digit > 9)
 			continue;
 
-		sprites[digit]->SetPosition({pos.x + offsetX, pos.y});
-		sprites[digit]->Draw();
+		// Spriteを毎回生成
+		Sprite* temp = Sprite::Create(textures[digit], {pos.x + offsetX, pos.y}, {1, 1, 1, 1}, {0.5f, 0.5f});
+		temp->SetSize(size);
+		temp->Draw();
 
 		offsetX += spacing;
 	}
@@ -125,6 +107,7 @@ void PlayScene::DrawNumber(int value, Vector2 pos, Sprite* sprites[10], int spac
 
 void PlayScene::Draw() {
 	textureBackground_->Draw();
+
 	// 円
 	bigCircle->SetSize({R * 2, R * 2});
 	bigCircle->Draw();
@@ -133,7 +116,7 @@ void PlayScene::Draw() {
 
 	// === 目標 ===
 	Vector2 targetPos = {50, 50};
-	DrawNumber((int)target, targetPos, digitSprites, 70);
+	DrawNumber((int)target, targetPos, digitTextures, 70, {90, 90});
 
 	int digits = (int)std::to_string((int)target).size();
 	float textOffsetX = targetPos.x + digits * 70 + 150;
@@ -145,7 +128,7 @@ void PlayScene::Draw() {
 	toleranceSprite->SetPosition(tolPos);
 	toleranceSprite->Draw();
 
-	DrawNumber((int)tolerance, {tolPos.x + 80, tolPos.y}, toleranceDigits, 60);
+	DrawNumber((int)tolerance, {tolPos.x + 80, tolPos.y}, digitTextures, 55, {60, 60});
 
 	percentSprite->SetSize({60, 60});
 	percentSprite->SetPosition({tolPos.x + 80 + 60, tolPos.y});
@@ -155,11 +138,11 @@ void PlayScene::Draw() {
 	if (finished) {
 		Vector2 resultPos = {50, 350};
 		int result = (int)roundf((r / R) * 100.0f);
-		DrawNumber(result, resultPos, resultDigits, 70);
+		DrawNumber(result, resultPos, digitTextures, 70, {90, 90});
 
 		int resDigits = (int)std::to_string(result).size();
 		float percentOffsetX = resultPos.x + resDigits * 70 + 150;
-		percentSprite->SetSize({500, 500}); // 結果表示は大きく
+		percentSprite->SetSize({500, 500});
 		percentSprite->SetPosition({percentOffsetX, resultPos.y});
 		percentSprite->Draw();
 	}

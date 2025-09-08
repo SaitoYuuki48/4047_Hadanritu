@@ -38,8 +38,15 @@ void PlayScene::Initialize() {
 	bigCircle = Sprite::Create(bigTex, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
 	smallCircle = Sprite::Create(smallTex, centerPos, {1, 1, 1, 1}, {0.5f, 0.5f});
 
+	// 黒背景 (フェード用)
+	uint32_t blackTex = TextureManager::Load("blackout.png");
+	blackOverlay = Sprite::Create(blackTex, {0, 0}, {1, 1, 1, 0.0f}, {0.0f, 0.0f});
+	blackOverlay->SetSize({1280, 720});
+
 	level = 1;
 	finished = false;
+	state = GameState::Playing;
+
 	SetupStage();
 }
 
@@ -58,37 +65,68 @@ void PlayScene::SetupStage() {
 	speed = 0.5f + (level - 1) * 0.1f;
 	direction = 1;
 	finished = false;
+
+	overlayAlpha = 0.0f;
 }
 
 void PlayScene::Update() {
-	if (finished)
-		return;
-
-	r += speed * direction;
-	if (r >= maxR) {
-		r = maxR;
-		direction = -1;
-	}
-	if (r <= minR) {
-		r = minR;
-		direction = 1;
-	}
-
-	if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
-		float destroyedPercentF = (r / R) * 100.0f;
-		int destroyedPercent = (int)roundf(destroyedPercentF);
-
-		if (fabs(target - destroyedPercent) <= tolerance) {
-			level++;
-			SetupStage();
-		} else {
-			finished = true;
+	if (state == GameState::Playing) {
+		// 円の伸縮
+		r += speed * direction;
+		if (r >= maxR) {
+			r = maxR;
+			direction = -1;
 		}
+		if (r <= minR) {
+			r = minR;
+			direction = 1;
+		}
+
+		// Space押したらリザルトへ
+		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+			finalResult = (int)roundf((r / R) * 100.0f);
+			displayedResult = 0;
+			overlayAlpha = 0.0f;
+			state = GameState::ResultFadeIn;
+		}
+	} else if (state == GameState::ResultFadeIn) {
+		// フェードイン（1秒でα=0.7）
+		overlayAlpha += 0.012f;
+		if (overlayAlpha >= 0.7f) {
+			overlayAlpha = 0.7f;
+			state = GameState::ResultCounting;
+		}
+	} else if (state == GameState::ResultCounting) {
+		// カウントアップ
+		if (displayedResult < finalResult) {
+			displayedResult += 1;
+			if (displayedResult > finalResult) {
+				displayedResult = finalResult;
+			}
+		} else {
+			state = GameState::ResultWait;
+		}
+	} else if (state == GameState::ResultWait) {
+		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+			if (fabs(target - finalResult) <= tolerance) {
+				level++;
+				SetupStage();
+				state = GameState::Playing;
+			} else {
+				state = GameState::GameOver;
+			}
+		}
+	} else if (state == GameState::GameOver) {
+		// 今は結果％だけ表示
 	}
 }
 
 void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int spacing, Vector2 size) {
 	std::string str = std::to_string(value);
+	float totalWidth = (str.size() * size.x) + (spacing * (str.size() - 1));
+
+	// pos を中央として全体をずらす
+	float startX = pos.x - totalWidth / 2.0f;
 	float offsetX = 0.0f;
 
 	for (char c : str) {
@@ -96,54 +134,63 @@ void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int sp
 		if (digit < 0 || digit > 9)
 			continue;
 
-		// Spriteを毎回生成
-		Sprite* temp = Sprite::Create(textures[digit], {pos.x + offsetX, pos.y}, {1, 1, 1, 1}, {0.5f, 0.5f});
+		Sprite* temp = Sprite::Create(textures[digit], {startX + offsetX, pos.y}, {1, 1, 1, 1}, {0.5f, 0.5f});
 		temp->SetSize(size);
 		temp->Draw();
+		//delete temp;
 
-		offsetX += spacing;
+		offsetX += size.x + spacing; // spacingを広めに
 	}
 }
 
 void PlayScene::Draw() {
 	textureBackground_->Draw();
 
-	// 円
-	bigCircle->SetSize({R * 2, R * 2});
-	bigCircle->Draw();
-	smallCircle->SetSize({r * 2, r * 2});
-	smallCircle->Draw();
+	if (state == GameState::Playing) {
+		bigCircle->SetSize({R * 2, R * 2});
+		bigCircle->Draw();
+		smallCircle->SetSize({r * 2, r * 2});
+		smallCircle->Draw();
 
-	// === 目標 ===
-	Vector2 targetPos = {50, 50};
-	DrawNumber((int)target, targetPos, digitTextures, 70, {90, 90});
+		// 目標の表示（左上）
+		Vector2 targetPos = {150, 50};
+		DrawNumber((int)target, targetPos, digitTextures, 0, {90, 90});
 
-	int digits = (int)std::to_string((int)target).size();
-	float textOffsetX = targetPos.x + digits * 70 + 150;
-	textSprite->SetPosition({textOffsetX, targetPos.y});
-	textSprite->Draw();
+		int digits = (int)std::to_string((int)target).size();
+		float textOffsetX = targetPos.x + digits * 70 + 150;
+		textSprite->SetPosition({textOffsetX, targetPos.y});
+		textSprite->Draw();
 
-	// === 誤差 ===
-	Vector2 tolPos = {targetPos.x, targetPos.y + 150};
-	toleranceSprite->SetPosition(tolPos);
-	toleranceSprite->Draw();
+		// 誤差の表示
+		Vector2 tolPos = {targetPos.x, targetPos.y + 150};
+		toleranceSprite->SetPosition(tolPos);
+		toleranceSprite->Draw();
 
-	DrawNumber((int)tolerance, {tolPos.x + 80, tolPos.y}, digitTextures, 55, {60, 60});
+		DrawNumber((int)tolerance, {tolPos.x + 80, tolPos.y}, digitTextures, 0, {60, 60});
+		percentSprite->SetSize({60, 60});
+		percentSprite->SetPosition({tolPos.x + 80 + 60, tolPos.y});
+		percentSprite->Draw();
+	}
 
-	percentSprite->SetSize({60, 60});
-	percentSprite->SetPosition({tolPos.x + 80 + 60, tolPos.y});
-	percentSprite->Draw();
+	// リザルト演出
+	if (state == GameState::ResultFadeIn || state == GameState::ResultCounting || state == GameState::ResultWait) {
 
-	// === 結果 ===
-	if (finished) {
-		Vector2 resultPos = {50, 350};
-		int result = (int)roundf((r / R) * 100.0f);
-		DrawNumber(result, resultPos, digitTextures, 70, {90, 90});
+		blackOverlay->SetColor({1, 1, 1, overlayAlpha});
+		blackOverlay->Draw();
+	}
 
-		int resDigits = (int)std::to_string(result).size();
-		float percentOffsetX = resultPos.x + resDigits * 70 + 150;
-		percentSprite->SetSize({500, 500});
+	if (state == GameState::ResultCounting || state == GameState::ResultWait || state == GameState::GameOver) {
+		Vector2 resultPos = {640, 360}; // 中央
+		DrawNumber(displayedResult, resultPos, digitTextures, 0, {180, 180});
+
+		// 数字列の右端に % を配置
+		int resDigits = (int)std::to_string(displayedResult).size();
+		float totalWidth = (resDigits * 180.0f) + (30.0f * (resDigits - 1));
+		float percentOffsetX = resultPos.x + totalWidth / 2.0f + 90;
+
+		percentSprite->SetSize({180, 180});
 		percentSprite->SetPosition({percentOffsetX, resultPos.y});
 		percentSprite->Draw();
+
 	}
 }

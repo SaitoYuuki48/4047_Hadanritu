@@ -20,6 +20,7 @@ void PlayScene::Initialize() {
 	textTexture = TextureManager::Load("Text.png");
 	percentTexture = TextureManager::Load("%.png");
 	toleranceTexture = TextureManager::Load("+-.png");
+	guideTexture = TextureManager::Load("guide.png");
 
 	textSprite = Sprite::Create(textTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	textSprite->SetSize({330, 330});
@@ -29,6 +30,9 @@ void PlayScene::Initialize() {
 
 	toleranceSprite = Sprite::Create(toleranceTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	toleranceSprite->SetSize({60, 60});
+
+	guideSprite = Sprite::Create(guideTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	guideSprite->SetSize({140, 120}); // サイズは調整可
 
 	// 円スプライト
 	uint32_t bigTex = TextureManager::Load("BlackCircle.png");
@@ -113,7 +117,7 @@ void PlayScene::Update() {
 			if (displayedResult > finalResult)
 				displayedResult = finalResult;
 		} else {
-			// 判定して GameOver 状態に移行
+			// 判定結果
 			if (fabs(target - finalResult) <= tolerance) {
 				isClear = true;
 			} else {
@@ -122,21 +126,20 @@ void PlayScene::Update() {
 			state = GameState::GameOver;
 		}
 	} else if (state == GameState::GameOver) {
-		// CLEAR / GAMEOVER 表示中
+		// CLEAR / GAMEOVER 表示中にSpace押されたら処理
 		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 			if (isClear) {
-				// ★ クリア時 → 次のステージへ
+				// クリア → 次のステージ
 				level++;
 				SetupStage();
 				state = GameState::Playing;
 			} else {
-				// ★ ゲームオーバー時 → TitleScene に戻す
-				finished = true; // GameScene が検知してフェードアウト開始
+				// 失敗 → TitleScene へ戻る
+				finished = true;
 			}
 		}
 	}
 }
-
 
 void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int spacing, Vector2 size) {
 	std::string str = std::to_string(value);
@@ -184,6 +187,10 @@ void PlayScene::Draw() {
 		percentSprite->SetSize({60, 70});
 		percentSprite->SetPosition({tolPos.x + 180, tolPos.y + 10});
 		percentSprite->Draw();
+
+		// ★ guide.png を%の右に配置
+		guideSprite->SetPosition({percentSprite->GetPosition().x + 100, percentSprite->GetPosition().y + 30});
+		guideSprite->Draw();
 	}
 
 	if (state == GameState::ResultFadeIn || state == GameState::ResultCounting || state == GameState::GameOver) {

@@ -27,12 +27,14 @@ private:
 	Sprite* blackOverlay = nullptr;
 	Sprite* clearSprite = nullptr;
 	Sprite* gameoverSprite = nullptr;
+	Sprite* guideSprite = nullptr;
 
 	// テクスチャ
 	uint32_t digitTextures[10];
 	uint32_t textTexture;
 	uint32_t percentTexture;
 	uint32_t toleranceTexture;
+	uint32_t guideTexture;
 
 	// ゲーム進行
 	GameState state;

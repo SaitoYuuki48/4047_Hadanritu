@@ -25,7 +25,7 @@ void PlayScene::Initialize() {
 	textSprite->SetSize({330, 330});
 
 	percentSprite = Sprite::Create(percentTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
-	percentSprite->SetSize({60, 60});
+	percentSprite->SetSize({50, 60});
 
 	toleranceSprite = Sprite::Create(toleranceTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	toleranceSprite->SetSize({60, 60});
@@ -43,9 +43,19 @@ void PlayScene::Initialize() {
 	blackOverlay = Sprite::Create(blackTex, {0, 0}, {1, 1, 1, 0.0f}, {0.0f, 0.0f});
 	blackOverlay->SetSize({1280, 720});
 
+	// クリア／ゲームオーバー画像
+	uint32_t clearTex = TextureManager::Load("clear.png");
+	clearSprite = Sprite::Create(clearTex, {640, 160}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	clearSprite->SetSize({400, 200});
+
+	uint32_t gameoverTex = TextureManager::Load("gameover.png");
+	gameoverSprite = Sprite::Create(gameoverTex, {640, 160}, {1, 1, 1, 1}, {0.5f, 0.5f});
+	gameoverSprite->SetSize({400, 200});
+
 	level = 1;
 	finished = false;
 	state = GameState::Playing;
+	isClear = false;
 
 	SetupStage();
 }
@@ -100,24 +110,30 @@ void PlayScene::Update() {
 		// カウントアップ
 		if (displayedResult < finalResult) {
 			displayedResult += 1;
-			if (displayedResult > finalResult) {
+			if (displayedResult > finalResult)
 				displayedResult = finalResult;
-			}
 		} else {
-			state = GameState::ResultWait;
-		}
-	} else if (state == GameState::ResultWait) {
-		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+			// カウントアップ終了と同時に即判定
 			if (fabs(target - finalResult) <= tolerance) {
+				isClear = true;
+			} else {
+				isClear = false;
+			}
+			state = GameState::GameOver;
+		}
+	} else if (state == GameState::GameOver) {
+		// CLEAR / GAMEOVER 表示中にSpace押すと次へ
+		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
+			if (isClear) {
 				level++;
 				SetupStage();
 				state = GameState::Playing;
 			} else {
-				state = GameState::GameOver;
+				level = 1; // リトライ用
+				SetupStage();
+				state = GameState::Playing;
 			}
 		}
-	} else if (state == GameState::GameOver) {
-		// 今は結果％だけ表示
 	}
 }
 
@@ -125,7 +141,6 @@ void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int sp
 	std::string str = std::to_string(value);
 	float totalWidth = (str.size() * size.x) + (spacing * (str.size() - 1));
 
-	// pos を中央として全体をずらす
 	float startX = pos.x - totalWidth / 2.0f;
 	float offsetX = 0.0f;
 
@@ -137,9 +152,8 @@ void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int sp
 		Sprite* temp = Sprite::Create(textures[digit], {startX + offsetX, pos.y}, {1, 1, 1, 1}, {0.5f, 0.5f});
 		temp->SetSize(size);
 		temp->Draw();
-		//delete temp;
-
-		offsetX += size.x + spacing; // spacingを広めに
+		// delete temp; ← 必要なら管理を工夫
+		offsetX += size.x + spacing;
 	}
 }
 
@@ -162,35 +176,43 @@ void PlayScene::Draw() {
 		textSprite->Draw();
 
 		// 誤差の表示
-		Vector2 tolPos = {targetPos.x , targetPos.y + 100};
+		Vector2 tolPos = {targetPos.x, targetPos.y + 100};
 		toleranceSprite->SetPosition(tolPos);
 		toleranceSprite->Draw();
 
-		DrawNumber((int)tolerance, {tolPos.x + 120, tolPos.y - 0}, digitTextures, 0, {60, 60});
-		percentSprite->SetSize({60, 60});
-		percentSprite->SetPosition({tolPos.x + 80 + 100, tolPos.y + 10});
+		DrawNumber((int)tolerance, {tolPos.x + 120, tolPos.y}, digitTextures, 0, {60, 60});
+		percentSprite->SetSize({60, 70});
+		percentSprite->SetPosition({tolPos.x + 180, tolPos.y + 10});
 		percentSprite->Draw();
 	}
 
 	// リザルト演出
-	if (state == GameState::ResultFadeIn || state == GameState::ResultCounting || state == GameState::ResultWait) {
-
+	if (state == GameState::ResultFadeIn || state == GameState::ResultCounting || state == GameState::GameOver) {
 		blackOverlay->SetColor({1, 1, 1, overlayAlpha});
 		blackOverlay->Draw();
 	}
 
-	if (state == GameState::ResultCounting || state == GameState::ResultWait || state == GameState::GameOver) {
+	if (state == GameState::ResultCounting || state == GameState::GameOver) {
 		Vector2 resultPos = {640, 360}; // 中央
-		DrawNumber(displayedResult, resultPos, digitTextures, 0, {180, 180});
+		DrawNumber(displayedResult, resultPos, digitTextures, 10, {180, 180});
 
-		// 数字列の右端に % を配置
 		int resDigits = (int)std::to_string(displayedResult).size();
-		float totalWidth = (resDigits * 180.0f) + (30.0f * (resDigits - 1));
+		float totalWidth = (resDigits * 180.0f) + (10.0f * (resDigits - 1));
 		float percentOffsetX = resultPos.x + totalWidth / 2.0f + 90;
 
 		percentSprite->SetSize({180, 180});
 		percentSprite->SetPosition({percentOffsetX, resultPos.y});
 		percentSprite->Draw();
 
+		// CLEAR or GAMEOVER 表示
+		if (state == GameState::GameOver) {
+			if (isClear) {
+				clearSprite->SetPosition({resultPos.x, resultPos.y - 200});
+				clearSprite->Draw();
+			} else {
+				gameoverSprite->SetPosition({resultPos.x, resultPos.y - 200});
+				gameoverSprite->Draw();
+			}
+		}
 	}
 }

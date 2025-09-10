@@ -32,6 +32,13 @@ private:
 	Sprite* blackOverlay = nullptr;
 	float overlayAlpha = 0.0f;
 
+	// 演出用スプライト
+	Sprite* clearSprite = nullptr;
+	Sprite* gameoverSprite = nullptr;
+
+	// 判定フラグ
+	bool isClear = false;
+
 	// ゲームデータ
 	float R; // 大きい円の半径
 	float r; // 小さい円の半径

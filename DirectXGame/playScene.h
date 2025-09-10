@@ -1,5 +1,4 @@
 #pragma once
-#include "Scene.h"
 #include <KamataEngine.h>
 using namespace KamataEngine;
 
@@ -14,23 +13,24 @@ private:
 	Sprite* bigCircle = nullptr;
 	Sprite* smallCircle = nullptr;
 
-	// テクスチャ（使い回し）
-	uint32_t digitTextures[10]; // 数字
-	uint32_t percentTexture;
-	uint32_t toleranceTexture;
-	uint32_t textTexture;
-
-	// 数字スプライト
-	Sprite* digitSprites[10] = {nullptr};    // 目標用
-	Sprite* toleranceDigits[10] = {nullptr}; // 誤差用
-	Sprite* resultDigits[10] = {nullptr};    // 結果用
+	// 数字テクスチャ
+	uint32_t digitTextures[10];
 
 	// 記号スプライト
-	Sprite* textSprite = nullptr;      // "Text.png"（目標用）
-	Sprite* percentSprite = nullptr;   // "%.png"   （共通で使う）
-	Sprite* toleranceSprite = nullptr; // "+-.png" （誤差表示用）
-	// 白背景
+	uint32_t textTexture;
+	uint32_t percentTexture;
+	uint32_t toleranceTexture;
+
+	Sprite* textSprite = nullptr;      // "Text.png"
+	Sprite* percentSprite = nullptr;   // "%.png"
+	Sprite* toleranceSprite = nullptr; // "+-.png"
+
+	// 背景
 	Sprite* textureBackground_ = nullptr;
+
+	// フェード用黒背景
+	Sprite* blackOverlay = nullptr;
+	float overlayAlpha = 0.0f;
 
 	// ゲームデータ
 	float R; // 大きい円の半径
@@ -44,6 +44,12 @@ private:
 	float tolerance; // 許容誤差
 	int level;       // レベル
 	bool finished;   // 判定済みフラグ
+
+	int displayedResult = 0; // カウントアップ用
+	int finalResult = 0;     // 実際の破壊率
+
+	enum class GameState { Playing, ResultFadeIn, ResultCounting, ResultWait, GameOver };
+	GameState state;
 
 	// 内部関数
 	void SetupStage();

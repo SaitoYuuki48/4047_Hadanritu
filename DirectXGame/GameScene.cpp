@@ -14,7 +14,6 @@ void GameScene::Initialize() {
 	fadePlay = true;
 	fade2Play = false;
 }
-
 void GameScene::Update() {
 	if (fadePlay == true) {
 		if (fadeoutSpriteColor.w >= 0.0f) {
@@ -25,12 +24,16 @@ void GameScene::Update() {
 	if (fadeoutSpriteColor.w <= 0.0f) {
 		fadePlay = false;
 	}
+
 	if (fadePlay == false) {
-		// PlayScene の更新
+		// ★ PlaySceneの更新
 		playScene.Update();
-		if (Input::GetInstance()->TriggerKey(DIK_RETURN)) {
+
+		// ★ PlaySceneが終了（ゲームオーバーでSpace押された）らフェードアウト開始
+		if (playScene.IsFinished()) {
 			fade2Play = true;
 		}
+
 		if (fade2Play == true) {
 			if (fadeoutSprite2Color.w <= 1.0f) {
 				fadeoutSprite2Color.w += 0.01f;
@@ -38,7 +41,7 @@ void GameScene::Update() {
 			fadeSprite2->SetColor(fadeoutSprite2Color);
 		}
 		if (fadeoutSprite2Color.w >= 1.0f) {
-			isPlaySceneEnd = true;
+			isPlaySceneEnd = true; // → TitleSceneへ遷移
 		}
 	}
 }

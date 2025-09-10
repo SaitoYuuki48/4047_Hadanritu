@@ -1,45 +1,46 @@
 #pragma once
 #include <KamataEngine.h>
+
 using namespace KamataEngine;
+
+enum class GameState { Playing, ResultFadeIn, ResultCounting, GameOver };
 
 class PlayScene {
 public:
 	void Initialize();
+	void SetupStage();
 	void Update();
 	void Draw();
+	void DrawNumber(int value, Vector2 pos, uint32_t textures[10], int spacing, Vector2 size);
+
+	// GameScene から終了検知する用
+	bool IsFinished() const { return finished; }
 
 private:
-	// 円スプライト
+	// スプライト類
+	Sprite* textureBackground_ = nullptr;
+	Sprite* textSprite = nullptr;
+	Sprite* percentSprite = nullptr;
+	Sprite* toleranceSprite = nullptr;
 	Sprite* bigCircle = nullptr;
 	Sprite* smallCircle = nullptr;
+	Sprite* blackOverlay = nullptr;
+	Sprite* clearSprite = nullptr;
+	Sprite* gameoverSprite = nullptr;
 
-	// 数字テクスチャ
+	// テクスチャ
 	uint32_t digitTextures[10];
-
-	// 記号スプライト
 	uint32_t textTexture;
 	uint32_t percentTexture;
 	uint32_t toleranceTexture;
 
-	Sprite* textSprite = nullptr;      // "Text.png"
-	Sprite* percentSprite = nullptr;   // "%.png"
-	Sprite* toleranceSprite = nullptr; // "+-.png"
-
-	// 背景
-	Sprite* textureBackground_ = nullptr;
-
-	// フェード用黒背景
-	Sprite* blackOverlay = nullptr;
-	float overlayAlpha = 0.0f;
-
-	// 演出用スプライト
-	Sprite* clearSprite = nullptr;
-	Sprite* gameoverSprite = nullptr;
-
-	// 判定フラグ
+	// ゲーム進行
+	GameState state;
+	bool finished = false;
 	bool isClear = false;
+	int level = 1;
 
-	// ゲームデータ
+	// 円関連
 	float R; // 大きい円の半径
 	float r; // 小さい円の半径
 	float minR;
@@ -47,18 +48,12 @@ private:
 	float speed;
 	int direction;
 
-	float target;    // 目標破壊率
-	float tolerance; // 許容誤差
-	int level;       // レベル
-	bool finished;   // 判定済みフラグ
+	// 破壊率関連
+	float target;
+	float tolerance;
+	int finalResult;
+	int displayedResult;
 
-	int displayedResult = 0; // カウントアップ用
-	int finalResult = 0;     // 実際の破壊率
-
-	enum class GameState { Playing, ResultFadeIn, ResultCounting, ResultWait, GameOver };
-	GameState state;
-
-	// 内部関数
-	void SetupStage();
-	void DrawNumber(int value, Vector2 pos, uint32_t textures[10], int spacing, Vector2 size);
+	// 演出用
+	float overlayAlpha;
 };

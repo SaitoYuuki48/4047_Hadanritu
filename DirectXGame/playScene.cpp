@@ -113,7 +113,7 @@ void PlayScene::Update() {
 			if (displayedResult > finalResult)
 				displayedResult = finalResult;
 		} else {
-			// カウントアップ終了と同時に即判定
+			// 判定して GameOver 状態に移行
 			if (fabs(target - finalResult) <= tolerance) {
 				isClear = true;
 			} else {
@@ -122,20 +122,21 @@ void PlayScene::Update() {
 			state = GameState::GameOver;
 		}
 	} else if (state == GameState::GameOver) {
-		// CLEAR / GAMEOVER 表示中にSpace押すと次へ
+		// CLEAR / GAMEOVER 表示中
 		if (Input::GetInstance()->TriggerKey(DIK_SPACE)) {
 			if (isClear) {
+				// ★ クリア時 → 次のステージへ
 				level++;
 				SetupStage();
 				state = GameState::Playing;
 			} else {
-				level = 1; // リトライ用
-				SetupStage();
-				state = GameState::Playing;
+				// ★ ゲームオーバー時 → TitleScene に戻す
+				finished = true; // GameScene が検知してフェードアウト開始
 			}
 		}
 	}
 }
+
 
 void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int spacing, Vector2 size) {
 	std::string str = std::to_string(value);
@@ -152,7 +153,6 @@ void PlayScene::DrawNumber(int value, Vector2 pos, uint32_t textures[10], int sp
 		Sprite* temp = Sprite::Create(textures[digit], {startX + offsetX, pos.y}, {1, 1, 1, 1}, {0.5f, 0.5f});
 		temp->SetSize(size);
 		temp->Draw();
-		// delete temp; ← 必要なら管理を工夫
 		offsetX += size.x + spacing;
 	}
 }
@@ -166,7 +166,7 @@ void PlayScene::Draw() {
 		smallCircle->SetSize({r * 2, r * 2});
 		smallCircle->Draw();
 
-		// 目標の表示（左上）
+		// 目標表示（左上）
 		Vector2 targetPos = {150, 70};
 		DrawNumber((int)target, targetPos, digitTextures, 0, {90, 90});
 
@@ -175,7 +175,7 @@ void PlayScene::Draw() {
 		textSprite->SetPosition({textOffsetX, targetPos.y - 10});
 		textSprite->Draw();
 
-		// 誤差の表示
+		// 誤差表示
 		Vector2 tolPos = {targetPos.x, targetPos.y + 100};
 		toleranceSprite->SetPosition(tolPos);
 		toleranceSprite->Draw();
@@ -186,14 +186,13 @@ void PlayScene::Draw() {
 		percentSprite->Draw();
 	}
 
-	// リザルト演出
 	if (state == GameState::ResultFadeIn || state == GameState::ResultCounting || state == GameState::GameOver) {
 		blackOverlay->SetColor({1, 1, 1, overlayAlpha});
 		blackOverlay->Draw();
 	}
 
 	if (state == GameState::ResultCounting || state == GameState::GameOver) {
-		Vector2 resultPos = {640, 360}; // 中央
+		Vector2 resultPos = {640, 360};
 		DrawNumber(displayedResult, resultPos, digitTextures, 10, {180, 180});
 
 		int resDigits = (int)std::to_string(displayedResult).size();
@@ -204,7 +203,6 @@ void PlayScene::Draw() {
 		percentSprite->SetPosition({percentOffsetX, resultPos.y});
 		percentSprite->Draw();
 
-		// CLEAR or GAMEOVER 表示
 		if (state == GameState::GameOver) {
 			if (isClear) {
 				clearSprite->SetPosition({resultPos.x, resultPos.y - 200});

@@ -97,7 +97,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			if (titleScene->IsTitleEnd()) {
 				//次のシーンの値を代入してシーン切り替え
 				sceneNo = titleScene->NextScene();
-				resultScene->Initialize();
+				gameScene->Initialize();
 			}
 			break;
 		case SceneType::kGamePlay:
@@ -114,7 +114,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			if (resultScene->IsResultEnd()) {
 				//次のシーンの値を代入してシーン切り替え
 				sceneNo = resultScene->NextScene();
-				gameScene->Initialize();
 			}
 			break;
 		}

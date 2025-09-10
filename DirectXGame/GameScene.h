@@ -13,7 +13,7 @@ public:
 	//シーン切り替え用
 	bool isPlaySceneEnd = false;
 	bool IsGameEnd() { return isPlaySceneEnd; }
-	SceneType NextScene() { return SceneType::kResult; }
+	SceneType NextScene() { return SceneType::kTitle; }
 
 
 private:

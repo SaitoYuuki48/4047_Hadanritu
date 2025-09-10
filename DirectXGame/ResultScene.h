@@ -16,5 +16,10 @@ public:
 	bool isResultSceneEnd = false;
 	bool IsResultEnd() { return isResultSceneEnd; }
 	SceneType NextScene() { return SceneType::kTitle; }
+
+private:
+	Sprite* fadeSprite = nullptr;
+	Vector4 fadeoutSpriteColor = { 1.0f,1.0f,1.0f,1.0f };
+	bool fadePlay = true;
 };
 

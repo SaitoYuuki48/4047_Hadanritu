@@ -81,6 +81,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	ResultScene* resultScene = new ResultScene();
 	resultScene->Initialize();
 
+
 	// メインループ
 	while (true) {
 
@@ -133,6 +134,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 			gameScene->Draw();
 			break;
 		case SceneType::kResult:
+			resultScene->Draw();
 			break;
 		}
 		// スプライト描画後処理

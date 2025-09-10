@@ -22,7 +22,7 @@ void PlayScene::Initialize() {
 	toleranceTexture = TextureManager::Load("+-.png");
 
 	textSprite = Sprite::Create(textTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
-	textSprite->SetSize({500, 500});
+	textSprite->SetSize({330, 330});
 
 	percentSprite = Sprite::Create(percentTexture, {0, 0}, {1, 1, 1, 1}, {0.5f, 0.5f});
 	percentSprite->SetSize({60, 60});
@@ -153,22 +153,22 @@ void PlayScene::Draw() {
 		smallCircle->Draw();
 
 		// 目標の表示（左上）
-		Vector2 targetPos = {150, 50};
+		Vector2 targetPos = {150, 70};
 		DrawNumber((int)target, targetPos, digitTextures, 0, {90, 90});
 
 		int digits = (int)std::to_string((int)target).size();
-		float textOffsetX = targetPos.x + digits * 70 + 150;
-		textSprite->SetPosition({textOffsetX, targetPos.y});
+		float textOffsetX = targetPos.x + digits * 70 + 50;
+		textSprite->SetPosition({textOffsetX, targetPos.y - 10});
 		textSprite->Draw();
 
 		// 誤差の表示
-		Vector2 tolPos = {targetPos.x, targetPos.y + 150};
+		Vector2 tolPos = {targetPos.x , targetPos.y + 100};
 		toleranceSprite->SetPosition(tolPos);
 		toleranceSprite->Draw();
 
-		DrawNumber((int)tolerance, {tolPos.x + 80, tolPos.y}, digitTextures, 0, {60, 60});
+		DrawNumber((int)tolerance, {tolPos.x + 120, tolPos.y - 0}, digitTextures, 0, {60, 60});
 		percentSprite->SetSize({60, 60});
-		percentSprite->SetPosition({tolPos.x + 80 + 60, tolPos.y});
+		percentSprite->SetPosition({tolPos.x + 80 + 100, tolPos.y + 10});
 		percentSprite->Draw();
 	}
 

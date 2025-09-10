@@ -1,5 +1,6 @@
 #pragma once
 #include "PlayScene.h" // PlayScene クラスを読み込む
+#include "Scene.h"
 #include <KamataEngine.h>
 
 using namespace KamataEngine;
@@ -12,9 +13,16 @@ public:
 	//シーン切り替え用
 	bool isPlaySceneEnd = false;
 	bool IsGameEnd() { return isPlaySceneEnd; }
-	//SceneType NextScene() { return SceneType::kResult; }
+	SceneType NextScene() { return SceneType::kResult; }
 
 
 private:
 	PlayScene playScene; // PlayScene をメンバとして持つ
+	Sprite* fadeSprite = nullptr;
+	Sprite* fadeSprite2 = nullptr;
+	//フェードアウト用の変数
+	Vector4 fadeoutSpriteColor = { 1.0f,1.0f,1.0f,1.0f };
+	Vector4 fadeoutSprite2Color = { 1.0f,1.0f,1.0f,1.0f };
+	bool fadePlay = true;
+	bool fade2Play = false;
 };

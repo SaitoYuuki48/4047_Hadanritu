@@ -22,5 +22,9 @@ private:
 	DirectXCommon* dxCommon_ = nullptr;
 	Input* input_ = nullptr;
 	Sprite* titleScene = nullptr;
+	Sprite* fadeSprite = nullptr;
+	//フェードアウト用の変数
+	Vector4 fadeoutSpriteColor = { 1.0f,1.0f,1.0f,0.0f };
+	bool titlePlay = false;
 };
 

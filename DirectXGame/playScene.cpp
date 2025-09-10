@@ -55,8 +55,8 @@ void PlayScene::SetupStage() {
 	target = 15.0f + rand() % 66;
 
 	tolerance = 15.0f - (level - 1);
-	if (tolerance < 5.0f)
-		tolerance = 5.0f;
+	if (tolerance < 3.0f)
+		tolerance = 3.0f;
 
 	r = R * 0.5f;
 	minR = R * 0.01f;

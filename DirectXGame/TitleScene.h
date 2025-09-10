@@ -29,5 +29,8 @@ private:
 	Vector4 fadeoutSprite2Color = { 1.0f,1.0f,1.0f,1.0f };
 	bool titlePlay = false;
 	bool titlePlay2 = false;
+
+	Sprite* explanationSprite = nullptr; // ゲーム説明画像用
+	bool showExplanation = false;        // 説明を表示するフラグ
 };
 
